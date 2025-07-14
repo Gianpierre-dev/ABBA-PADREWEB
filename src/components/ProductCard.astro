@@ -51,7 +51,7 @@ const whatsappUrl = `https://wa.me/970554050?text=${encodeURIComponent(whatsappM
     <!-- Price -->
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center space-x-2">
-        <span class="text-2xl font-bold text-green-600">
+        <span class="text-2xl font-bold text-pink-500">
           ${discountedPrice.toFixed(2)}
         </span>
         {discount && (
@@ -65,7 +65,7 @@ const whatsappUrl = `https://wa.me/970554050?text=${encodeURIComponent(whatsappM
     <!-- Actions -->
     <div class="flex space-x-2">
               <button 
-          class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 add-to-cart-btn"
+          class="flex-1 bg-pink-400 hover:bg-pink-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 add-to-cart-btn"
           data-product-id={id}
           data-product-name={name}
           data-product-price={discountedPrice}
@@ -77,7 +77,7 @@ const whatsappUrl = `https://wa.me/970554050?text=${encodeURIComponent(whatsappM
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 text-center"
+        class="flex-1 bg-pink-300 hover:bg-pink-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 text-center"
       >
         💬 WhatsApp
       </a>
