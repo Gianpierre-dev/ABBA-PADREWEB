@@ -1,0 +1,187 @@
+---
+export interface Props {
+  categories: any[];
+}
+
+const { categories } = Astro.props;
+---
+
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+  <h3 class="text-lg font-semibold mb-4">Filtrar Productos</h3>
+  
+  <!-- Search Bar -->
+  <div class="mb-6">
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      Buscar productos
+    </label>
+    <div class="relative">
+      <input 
+        type="text" 
+        id="searchInput"
+        placeholder="Escribe el nombre del producto..."
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+      />
+      <svg class="absolute right-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+    </div>
+  </div>
+  
+  <!-- Category Filter -->
+  <div class="mb-6">
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      Categorías
+    </label>
+    <div class="space-y-2">
+      <label class="flex items-center">
+        <input 
+          type="radio" 
+          name="category" 
+          value=""
+          class="mr-2 text-green-600"
+          checked
+        />
+        <span>Todas las categorías</span>
+      </label>
+      {categories.map(category => (
+        <label class="flex items-center">
+          <input 
+            type="radio" 
+            name="category" 
+            value={category.id}
+            class="mr-2 text-green-600"
+          />
+          <span class={`inline-block w-3 h-3 rounded-full mr-2 bg-${category.color}-500`}></span>
+          <span>{category.name}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+  
+  <!-- Price Range Filter -->
+  <div class="mb-6">
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      Rango de Precio
+    </label>
+    <div class="space-y-2">
+      <label class="flex items-center">
+        <input 
+          type="radio" 
+          name="priceRange" 
+          value=""
+          class="mr-2 text-green-600"
+          checked
+        />
+        <span>Todos los precios</span>
+      </label>
+      <label class="flex items-center">
+        <input 
+          type="radio" 
+          name="priceRange" 
+          value="0-50"
+          class="mr-2 text-green-600"
+        />
+        <span>Menos de $50</span>
+      </label>
+      <label class="flex items-center">
+        <input 
+          type="radio" 
+          name="priceRange" 
+          value="50-100"
+          class="mr-2 text-green-600"
+        />
+        <span>$50 - $100</span>
+      </label>
+      <label class="flex items-center">
+        <input 
+          type="radio" 
+          name="priceRange" 
+          value="100-300"
+          class="mr-2 text-green-600"
+        />
+        <span>$100 - $300</span>
+      </label>
+      <label class="flex items-center">
+        <input 
+          type="radio" 
+          name="priceRange" 
+          value="300+"
+          class="mr-2 text-green-600"
+        />
+        <span>Más de $300</span>
+      </label>
+    </div>
+  </div>
+  
+  <!-- Sort Options -->
+  <div class="mb-6">
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      Ordenar por
+    </label>
+    <select 
+      id="sortSelect"
+      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+    >
+      <option value="name">Nombre A-Z</option>
+      <option value="price-asc">Precio: Menor a Mayor</option>
+      <option value="price-desc">Precio: Mayor a Menor</option>
+      <option value="discount">Mayor Descuento</option>
+    </select>
+  </div>
+  
+  <!-- Clear Filters Button -->
+  <button 
+    id="clearFilters"
+    class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors"
+  >
+    Limpiar Filtros
+  </button>
+</div>
+
+<script>
+  // Event listeners para filtros
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    const categoryRadios = document.querySelectorAll('input[name="category"]');
+    const priceRadios = document.querySelectorAll('input[name="priceRange"]');
+    const sortSelect = document.getElementById('sortSelect') as HTMLSelectElement;
+    const clearFiltersBtn = document.getElementById('clearFilters') as HTMLButtonElement;
+    
+    if (!searchInput || !sortSelect || !clearFiltersBtn) return;
+    
+    // Función para aplicar filtros
+    function applyFilters() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedCategory = (document.querySelector('input[name="category"]:checked') as HTMLInputElement)?.value || '';
+      const selectedPrice = (document.querySelector('input[name="priceRange"]:checked') as HTMLInputElement)?.value || '';
+      const sortBy = sortSelect.value;
+      
+      // Trigger custom event para filtrar productos
+      document.dispatchEvent(new CustomEvent('filterProducts', {
+        detail: {
+          search: searchTerm,
+          category: selectedCategory,
+          priceRange: selectedPrice,
+          sort: sortBy
+        }
+      }));
+    }
+    
+    // Event listeners
+    searchInput.addEventListener('input', applyFilters);
+    categoryRadios.forEach(radio => radio.addEventListener('change', applyFilters));
+    priceRadios.forEach(radio => radio.addEventListener('change', applyFilters));
+    sortSelect.addEventListener('change', applyFilters);
+    
+    // Limpiar filtros
+    clearFiltersBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      const categoryDefault = document.querySelector('input[name="category"][value=""]') as HTMLInputElement;
+      const priceDefault = document.querySelector('input[name="priceRange"][value=""]') as HTMLInputElement;
+      if (categoryDefault) categoryDefault.checked = true;
+      if (priceDefault) priceDefault.checked = true;
+      sortSelect.value = 'name';
+      applyFilters();
+    });
+  });
+</script> 

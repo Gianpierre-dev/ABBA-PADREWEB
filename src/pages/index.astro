@@ -1,0 +1,104 @@
+---
+import Layout from '../components/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProductCard from '../components/ProductCard.astro';
+import productsData from '../data/products.json';
+
+const { categories, products } = productsData;
+
+// Obtener productos destacados
+const featuredProducts = products.filter(product => product.featured);
+---
+
+<Layout title="Mi Ecommerce - Inicio">
+  <Header />
+  
+  <main>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-green-600 to-blue-600 text-white py-20">
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-5xl font-bold mb-6">
+          👗 K-Fashion Store
+        </h1>
+        <p class="text-xl mb-8 max-w-2xl mx-auto">
+          Descubre los vestidos coreanos más trendy con diseños únicos y auténticos
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/productos" class="bg-white text-green-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition-colors">
+            Ver Productos
+          </a>
+          <a href="https://wa.me/970554050" class="bg-transparent border-2 border-white hover:bg-white hover:text-green-600 font-bold py-3 px-8 rounded-lg transition-colors">
+            Consultar WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-16">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+          Vestidos Destacados
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {featuredProducts.map(product => (
+            <ProductCard 
+              id={product.id}
+              name={product.name}
+              price={product.price}
+              image={product.image}
+              description={product.description}
+              category={categories.find(cat => cat.id === product.category)?.name}
+              discount={product.discount}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="bg-gray-100 py-16">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+          ¿Por qué elegir K-Fashion Store?
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Diseños Auténticos</h3>
+            <p class="text-gray-600">Vestidos importados directamente de Corea con diseños únicos</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Tallas Variadas</h3>
+            <p class="text-gray-600">Desde XS hasta XXL para que encuentres tu talla perfecta</p>
+          </div>
+          
+          <div class="text-center">
+            <div class="bg-purple-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Calidad Premium</h3>
+            <p class="text-gray-600">Materiales de alta calidad y acabados perfectos</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

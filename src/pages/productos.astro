@@ -1,0 +1,336 @@
+---
+import Layout from '../components/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ProductFilter from '../components/ProductFilter.astro';
+import productsData from '../data/products.json';
+
+const { categories, products } = productsData;
+---
+
+<Layout title="Productos - Mi Ecommerce">
+  <Header />
+  
+  <main class="container mx-auto px-4 py-8">
+    <!-- Page Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-4">
+        Catálogo de Productos
+      </h1>
+      <p class="text-gray-600 text-lg">
+        Descubre todos nuestros productos con los mejores precios
+      </p>
+    </div>
+    
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Filters Sidebar -->
+      <div class="lg:w-1/4">
+        <ProductFilter categories={categories} />
+      </div>
+      
+      <!-- Products Grid -->
+      <div class="lg:w-3/4">
+        <!-- Results Info -->
+        <div class="flex justify-between items-center mb-6">
+          <div id="resultsInfo" class="text-gray-600">
+            Mostrando {products.length} productos
+          </div>
+          <div id="viewToggle" class="flex space-x-2">
+            <button id="gridView" class="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+              </svg>
+            </button>
+            <button id="listView" class="p-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Products Container -->
+        <div id="productsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map(product => (
+            <div class="product-item" 
+                 data-category={product.category}
+                 data-price={product.price}
+                 data-name={product.name.toLowerCase()}
+                 data-discount={product.discount || 0}>
+              <ProductCard 
+                id={product.id}
+                name={product.name}
+                price={product.price}
+                image={product.image}
+                description={product.description}
+                category={categories.find(cat => cat.id === product.category)?.name}
+                discount={product.discount}
+              />
+            </div>
+          ))}
+        </div>
+        
+        <!-- No Results Message -->
+        <div id="noResults" class="text-center py-16 hidden">
+          <div class="text-gray-400 text-6xl mb-4">🔍</div>
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">No se encontraron productos</h3>
+          <p class="text-gray-500">Intenta con otros filtros o términos de búsqueda</p>
+        </div>
+        
+        <!-- Pagination -->
+        <div id="pagination" class="flex justify-center mt-8">
+          <div class="flex space-x-2">
+            <button id="prevPage" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Anterior
+            </button>
+            <div id="pageNumbers" class="flex space-x-2">
+              <!-- Page numbers will be inserted here -->
+            </div>
+            <button id="nextPage" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <Footer />
+</Layout>
+
+<script>
+  // Global variables
+  let currentPage = 1;
+  const itemsPerPage = 9;
+  let filteredProducts: Element[] = [];
+  let isGridView = true;
+  
+  // Get all products
+  const allProducts = Array.from(document.querySelectorAll('.product-item'));
+  
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    filteredProducts = allProducts;
+    updatePagination();
+    showPage(1);
+    setupEventListeners();
+  });
+  
+  // Listen for filter events
+  document.addEventListener('filterProducts', function(e: any) {
+    const { search, category, priceRange, sort } = e.detail;
+    filterProducts(search, category, priceRange, sort);
+  });
+  
+  // Filter products function
+  function filterProducts(search: string, category: string, priceRange: string, sort: string) {
+    filteredProducts = allProducts.filter(product => {
+      const productElement = product as HTMLElement;
+      const productName = productElement.dataset.name || '';
+      const productCategory = productElement.dataset.category || '';
+      const productPrice = parseFloat(productElement.dataset.price || '0');
+      
+      // Search filter
+      if (search && !productName.includes(search)) {
+        return false;
+      }
+      
+      // Category filter
+      if (category && productCategory !== category) {
+        return false;
+      }
+      
+      // Price range filter
+      if (priceRange) {
+        if (priceRange === '0-50' && productPrice >= 50) return false;
+        if (priceRange === '50-100' && (productPrice < 50 || productPrice >= 100)) return false;
+        if (priceRange === '100-300' && (productPrice < 100 || productPrice >= 300)) return false;
+        if (priceRange === '300+' && productPrice < 300) return false;
+      }
+      
+      return true;
+    });
+    
+    // Sort products
+    if (sort) {
+      filteredProducts.sort((a, b) => {
+        const aElement = a as HTMLElement;
+        const bElement = b as HTMLElement;
+        const aName = aElement.dataset.name || '';
+        const bName = bElement.dataset.name || '';
+        const aPrice = parseFloat(aElement.dataset.price || '0');
+        const bPrice = parseFloat(bElement.dataset.price || '0');
+        const aDiscount = parseFloat(aElement.dataset.discount || '0');
+        const bDiscount = parseFloat(bElement.dataset.discount || '0');
+        
+        switch(sort) {
+          case 'name':
+            return aName.localeCompare(bName);
+          case 'price-asc':
+            return aPrice - bPrice;
+          case 'price-desc':
+            return bPrice - aPrice;
+          case 'discount':
+            return bDiscount - aDiscount;
+          default:
+            return 0;
+        }
+      });
+    }
+    
+    currentPage = 1;
+    updatePagination();
+    showPage(1);
+    updateResultsInfo();
+  }
+  
+  // Update results info
+  function updateResultsInfo() {
+    const resultsInfo = document.getElementById('resultsInfo');
+    const noResults = document.getElementById('noResults');
+    
+    if (resultsInfo) {
+      if (filteredProducts.length === 0) {
+        resultsInfo.textContent = 'No se encontraron productos';
+      } else {
+        resultsInfo.textContent = `Mostrando ${filteredProducts.length} productos`;
+      }
+    }
+    
+    if (noResults) {
+      if (filteredProducts.length === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+    }
+  }
+  
+  // Show specific page
+  function showPage(page: number) {
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    
+    // Hide all products
+    allProducts.forEach(product => {
+      (product as HTMLElement).style.display = 'none';
+    });
+    
+    // Show products for current page
+    filteredProducts.slice(startIndex, endIndex).forEach(product => {
+      (product as HTMLElement).style.display = 'block';
+    });
+    
+    currentPage = page;
+    updatePaginationButtons();
+  }
+  
+  // Update pagination
+  function updatePagination() {
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    const pageNumbers = document.getElementById('pageNumbers');
+    const pagination = document.getElementById('pagination');
+    
+    if (!pagination || !pageNumbers) return;
+    
+    if (totalPages <= 1) {
+      pagination.style.display = 'none';
+      return;
+    }
+    
+    pagination.style.display = 'flex';
+    pageNumbers.innerHTML = '';
+    
+    for (let i = 1; i <= totalPages; i++) {
+      const button = document.createElement('button');
+      button.textContent = i.toString();
+      button.className = `px-3 py-2 rounded transition-colors ${
+        i === currentPage 
+          ? 'bg-green-500 text-white' 
+          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+      }`;
+      button.addEventListener('click', () => showPage(i));
+      pageNumbers.appendChild(button);
+    }
+  }
+  
+  // Update pagination buttons
+  function updatePaginationButtons() {
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    const prevBtn = document.getElementById('prevPage') as HTMLButtonElement;
+    const nextBtn = document.getElementById('nextPage') as HTMLButtonElement;
+    
+    if (prevBtn) prevBtn.disabled = currentPage === 1;
+    if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+    
+    // Update page number buttons
+    const pageButtons = document.querySelectorAll('#pageNumbers button');
+    pageButtons.forEach((btn, index) => {
+      btn.className = `px-3 py-2 rounded transition-colors ${
+        index + 1 === currentPage 
+          ? 'bg-green-500 text-white' 
+          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+      }`;
+    });
+  }
+  
+  // Setup event listeners
+  function setupEventListeners() {
+    // Pagination event listeners
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function() {
+        if (currentPage > 1) {
+          showPage(currentPage - 1);
+        }
+      });
+    }
+    
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+        if (currentPage < totalPages) {
+          showPage(currentPage + 1);
+        }
+      });
+    }
+    
+    // View toggle functionality
+    const gridView = document.getElementById('gridView');
+    const listView = document.getElementById('listView');
+    const productsContainer = document.getElementById('productsContainer');
+    
+    if (gridView) {
+      gridView.addEventListener('click', function() {
+        isGridView = true;
+        if (productsContainer) {
+          productsContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+        }
+        gridView.classList.add('bg-green-500', 'text-white');
+        gridView.classList.remove('bg-gray-200', 'text-gray-700');
+        if (listView) {
+          listView.classList.add('bg-gray-200', 'text-gray-700');
+          listView.classList.remove('bg-green-500', 'text-white');
+        }
+      });
+    }
+    
+    if (listView) {
+      listView.addEventListener('click', function() {
+        isGridView = false;
+        if (productsContainer) {
+          productsContainer.className = 'grid grid-cols-1 gap-4';
+        }
+        listView.classList.add('bg-green-500', 'text-white');
+        listView.classList.remove('bg-gray-200', 'text-gray-700');
+        if (gridView) {
+          gridView.classList.add('bg-gray-200', 'text-gray-700');
+          gridView.classList.remove('bg-green-500', 'text-white');
+        }
+      });
+    }
+  }
+</script> 

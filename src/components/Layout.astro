@@ -1,0 +1,403 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "K-Fashion Store", description = "Tu tienda online de vestidos coreanos con los mejores diseños y precios" } = Astro.props;
+---
+
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width" />
+  <meta name="generator" content={Astro.generator} />
+  <meta name="description" content={description} />
+  <title>{title}</title>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <slot />
+  
+  <!-- Script global del carrito -->
+  <script>
+    // Sistema de carrito de compras global
+    
+    // Inicializar el carrito cuando se carga la página
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🛒 Sistema de carrito iniciado');
+      
+      // Actualizar contador al cargar
+      updateCartCounter();
+      
+      // Event listeners para el sidebar del carrito
+      const cartButton = document.getElementById('cart-button');
+      const cartSidebar = document.getElementById('cart-sidebar');
+      const closeCartButton = document.getElementById('close-cart');
+      const clearCartButton = document.getElementById('clear-cart');
+      const buyNowButton = document.getElementById('buy-now');
+      
+      // Abrir sidebar del carrito
+      if (cartButton) {
+        cartButton.addEventListener('click', function() {
+          showCartSidebar();
+        });
+      }
+      
+      // Cerrar sidebar del carrito
+      if (closeCartButton) {
+        closeCartButton.addEventListener('click', function() {
+          hideCartSidebar();
+        });
+      }
+      
+      // Cerrar sidebar al hacer clic fuera de él
+      document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('cart-sidebar');
+        const cartButton = document.getElementById('cart-button');
+        
+        // Verificar si el sidebar está abierto
+        if (sidebar && !sidebar.classList.contains('translate-x-full')) {
+          // Verificar si el click fue fuera del sidebar y no en el botón del carrito
+          if (!sidebar.contains(event.target) && !cartButton.contains(event.target)) {
+            hideCartSidebar();
+          }
+        }
+      });
+      
+      // Comprar ahora
+      if (buyNowButton) {
+        buyNowButton.addEventListener('click', function() {
+          processCheckout();
+        });
+      }
+      
+      // Vaciar carrito
+      if (clearCartButton) {
+        clearCartButton.addEventListener('click', function() {
+          if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+            clearCart();
+            hideCartSidebar();
+          }
+        });
+      }
+      
+      // Event listener global para botones de carrito
+      document.addEventListener('click', function(event) {
+        const target = event.target;
+        
+        // Verificar si es un botón de agregar al carrito
+        if (target && target.hasAttribute && target.hasAttribute('data-product-id')) {
+          event.preventDefault();
+          console.log('🔄 Botón de carrito clickeado', target);
+          addToCart(target);
+        }
+        
+        // Verificar si es un botón de remover del carrito
+        if (target && target.hasAttribute && target.hasAttribute('data-remove-id')) {
+          event.preventDefault();
+          const productId = target.getAttribute('data-remove-id');
+          removeFromCart(productId);
+          renderCartItems();
+        }
+        
+        // Verificar si es un botón de incrementar cantidad
+        if (target && target.hasAttribute && target.hasAttribute('data-increase-id')) {
+          event.preventDefault();
+          const productId = target.getAttribute('data-increase-id');
+          changeQuantity(productId, 1);
+        }
+        
+        // Verificar si es un botón de decrementar cantidad
+        if (target && target.hasAttribute && target.hasAttribute('data-decrease-id')) {
+          event.preventDefault();
+          const productId = target.getAttribute('data-decrease-id');
+          changeQuantity(productId, -1);
+        }
+      });
+    });
+
+    // Agrega un producto al carrito
+    function addToCart(button) {
+      console.log('🛒 Función addToCart ejecutada');
+      
+      // Validar elemento
+      if (!button || !button.dataset) {
+        console.error('❌ Error: Elemento no válido');
+        return;
+      }
+
+      // Extraer datos del producto
+      const { productId, productName, productPrice } = button.dataset;
+      
+      // Validar datos
+      if (!productId || !productName || !productPrice) {
+        console.error('❌ Error: Datos del producto incompletos', {
+          id: productId || 'missing',
+          name: productName || 'missing', 
+          price: productPrice || 'missing'
+        });
+        return;
+      }
+
+      // Crear objeto producto
+      const product = {
+        id: productId,
+        name: productName,
+        price: parseFloat(productPrice)
+      };
+
+      // Validar precio
+      if (isNaN(product.price) || product.price <= 0) {
+        console.error('❌ Error: Precio inválido', productPrice);
+        return;
+      }
+
+      try {
+        // Obtener carrito actual
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        // Verificar si el producto ya existe
+        const existingItem = cart.find(item => item.id === product.id);
+        
+        if (existingItem) {
+          // Incrementar cantidad
+          existingItem.quantity += 1;
+          console.log('✅ Cantidad actualizada:', existingItem);
+        } else {
+          // Agregar nuevo producto
+          cart.push({
+            ...product,
+            quantity: 1,
+            addedAt: new Date().toISOString()
+          });
+          console.log('✅ Producto agregado:', product);
+        }
+        
+        // Guardar carrito
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Actualizar contador
+        updateCartCounter();
+        
+        // Feedback visual
+        showButtonFeedback(button, '✅ Agregado', '🛒 Agregar', 2000);
+        
+      } catch (error) {
+        console.error('❌ Error al agregar producto:', error);
+        showButtonFeedback(button, '❌ Error', '🛒 Agregar', 1500);
+      }
+    }
+
+    // Actualiza el contador del carrito
+    function updateCartCounter() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      
+      const cartCounter = document.querySelector('.cart-counter');
+      const cartItemCount = document.getElementById('cart-item-count');
+      
+      if (cartCounter) {
+        cartCounter.textContent = totalItems.toString();
+      }
+      if (cartItemCount) {
+        cartItemCount.textContent = totalItems.toString();
+      }
+      console.log('📊 Contador actualizado:', totalItems);
+    }
+
+    // Cambiar cantidad de un producto
+    function changeQuantity(productId, change) {
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const item = cart.find(item => item.id === productId);
+      
+      if (item) {
+        item.quantity += change;
+        
+        // Si la cantidad llega a 0 o menos, remover el producto
+        if (item.quantity <= 0) {
+          cart = cart.filter(cartItem => cartItem.id !== productId);
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCounter();
+        renderCartItems();
+        console.log('🔄 Cantidad actualizada:', productId, 'nueva cantidad:', item.quantity);
+      }
+    }
+
+    // Muestra feedback visual en el botón
+    function showButtonFeedback(button, tempText, originalText, duration = 2000) {
+      if (!button) return;
+      
+      const originalDisabled = button.disabled;
+      
+      // Aplicar cambios temporales
+      button.textContent = tempText;
+      button.disabled = true;
+      
+      // Restaurar después del tiempo especificado
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.disabled = originalDisabled;
+      }, duration);
+    }
+
+    // Mostrar sidebar del carrito
+    function showCartSidebar() {
+      const sidebar = document.getElementById('cart-sidebar');
+      if (sidebar) {
+        sidebar.classList.remove('translate-x-full');
+        renderCartItems();
+      }
+    }
+
+    // Ocultar sidebar del carrito
+    function hideCartSidebar() {
+      const sidebar = document.getElementById('cart-sidebar');
+      if (sidebar) {
+        sidebar.classList.add('translate-x-full');
+      }
+    }
+
+    // Renderizar productos en el modal
+    function renderCartItems() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cartItemsContainer = document.getElementById('cart-items');
+      const cartEmpty = document.getElementById('cart-empty');
+      const cartTotal = document.getElementById('cart-total');
+      
+      if (!cartItemsContainer) return;
+      
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '';
+        if (cartEmpty) cartEmpty.classList.remove('hidden');
+        if (cartTotal) cartTotal.textContent = '$0.00';
+        return;
+      }
+      
+      if (cartEmpty) cartEmpty.classList.add('hidden');
+      
+      let total = 0;
+      cartItemsContainer.innerHTML = cart.map(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        
+        return `
+          <div class="bg-white border rounded-lg p-4 shadow-sm">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1">
+                <h3 class="font-semibold text-sm text-gray-800">${item.name}</h3>
+                <p class="text-gray-500 text-xs">$${item.price.toFixed(2)} c/u</p>
+              </div>
+              <button 
+                data-remove-id="${item.id}"
+                class="text-red-500 hover:text-red-700 text-lg ml-2"
+                title="Eliminar producto"
+              >
+                🗑️
+              </button>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <button 
+                  data-decrease-id="${item.id}"
+                  class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-bold"
+                  title="Disminuir cantidad"
+                >
+                  −
+                </button>
+                <span class="font-semibold text-lg text-gray-800 min-w-[2rem] text-center">${item.quantity}</span>
+                <button 
+                  data-increase-id="${item.id}"
+                  class="w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center text-white font-bold"
+                  title="Aumentar cantidad"
+                >
+                  +
+                </button>
+              </div>
+              <span class="font-bold text-green-600 text-lg">$${itemTotal.toFixed(2)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      if (cartTotal) cartTotal.textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Remover producto del carrito
+    function removeFromCart(productId) {
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart = cart.filter(item => item.id !== productId);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCounter();
+      renderCartItems();
+      console.log('🗑️ Producto removido:', productId);
+    }
+
+    // Limpiar carrito
+    function clearCart() {
+      localStorage.removeItem('cart');
+      updateCartCounter();
+      renderCartItems();
+      console.log('🗑️ Carrito vaciado');
+    }
+
+    // Procesar checkout
+    function processCheckout() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      if (cart.length === 0) {
+        alert('Tu carrito está vacío. Agrega algunos productos primero.');
+        return;
+      }
+      
+      // Crear mensaje detallado para WhatsApp
+      let message = '🛒 *PEDIDO DE K-FASHION STORE*\n\n';
+      let total = 0;
+      
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        message += `${index + 1}. *${item.name}*\n`;
+        message += `   • Precio: $${item.price.toFixed(2)}\n`;
+        message += `   • Cantidad: ${item.quantity}\n`;
+        message += `   • Subtotal: $${itemTotal.toFixed(2)}\n\n`;
+      });
+      
+      message += `💰 *TOTAL: $${total.toFixed(2)}*\n\n`;
+      message += '📦 Por favor confirma mi pedido y dime los detalles de envío.';
+      
+      // Abrir WhatsApp con el pedido detallado
+      const whatsappUrl = `https://wa.me/970554050?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      
+      // Opcional: limpiar carrito después de enviar pedido
+      if (confirm('¿Quieres vaciar el carrito después de enviar el pedido?')) {
+        clearCart();
+        hideCartSidebar();
+      }
+      
+      console.log('📱 Pedido enviado por WhatsApp');
+    }
+
+    // Funciones globales
+    window.cartSystem = {
+      addToCart,
+      updateCartCounter,
+      getCartItems: () => JSON.parse(localStorage.getItem('cart') || '[]'),
+      clearCart,
+      removeFromCart,
+      changeQuantity,
+      showCartSidebar,
+      hideCartSidebar,
+      processCheckout
+    };
+  </script>
+</body>
+</html>
+
+<style is:global>
+  @import "../styles/global.css";
+</style> 

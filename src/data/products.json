@@ -1,0 +1,276 @@
+{
+  "categories": [
+    {
+      "id": "casual",
+      "name": "Casual",
+      "icon": "👗"
+    },
+    {
+      "id": "elegante", 
+      "name": "Elegante",
+      "icon": "✨"
+    },
+    {
+      "id": "vintage",
+      "name": "Vintage", 
+      "icon": "🌸"
+    },
+    {
+      "id": "mini",
+      "name": "Mini Vestidos",
+      "icon": "💫"
+    },
+    {
+      "id": "midi",
+      "name": "Midi",
+      "icon": "🌺"
+    },
+    {
+      "id": "maxi",
+      "name": "Maxi",
+      "icon": "🌙"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "Vestido Coreano Casual Rosa",
+      "price": 45.99,
+      "image": "/products/dress-casual-1.jpg",
+      "description": "Vestido casual coreano con estampado floral, perfecto para el día a día",
+      "category": "casual",
+      "stock": 15,
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "discount": 15,
+      "featured": true
+    },
+    {
+      "id": "2", 
+      "name": "Vestido Elegante Negro",
+      "price": 79.99,
+      "image": "/products/dress-elegant-1.jpg",
+      "description": "Vestido elegante negro con detalles dorados, ideal para eventos especiales",
+      "category": "elegante",
+      "stock": 8,
+      "sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+      "discount": 0,
+      "featured": true
+    },
+    {
+      "id": "3",
+      "name": "Vestido Vintage Azul",
+      "price": 52.99,
+      "image": "/products/dress-vintage-1.jpg", 
+      "description": "Vestido vintage azul con estilo retro coreano y mangas largas",
+      "category": "vintage",
+      "stock": 12,
+      "sizes": ["S", "M", "L", "XL"],
+      "discount": 10,
+      "featured": false
+    },
+    {
+      "id": "4",
+      "name": "Mini Vestido Blanco",
+      "price": 39.99,
+      "image": "/products/dress-mini-1.jpg",
+      "description": "Mini vestido blanco con encaje coreano, muy trendy",
+      "category": "mini", 
+      "stock": 20,
+      "sizes": ["XS", "S", "M", "L"],
+      "discount": 20,
+      "featured": true
+    },
+    {
+      "id": "5",
+      "name": "Vestido Midi Verde",
+      "price": 67.99,
+      "image": "/products/dress-midi-1.jpg",
+      "description": "Vestido midi verde con corte coreano y cinturón incluido",
+      "category": "midi",
+      "stock": 10,
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "discount": 0,
+      "featured": false
+    },
+    {
+      "id": "6",
+      "name": "Vestido Maxi Floral",
+      "price": 89.99,
+      "image": "/products/dress-maxi-1.jpg",
+      "description": "Vestido maxi con estampado floral coreano, elegante y cómodo",
+      "category": "maxi",
+      "stock": 6,
+      "sizes": ["M", "L", "XL", "XXL"],
+      "discount": 5,
+      "featured": true
+    },
+    {
+      "id": "7",
+      "name": "Vestido Casual Amarillo",
+      "price": 43.99,
+      "image": "/products/dress-casual-2.jpg",
+      "description": "Vestido casual amarillo con detalles únicos del diseño coreano",
+      "category": "casual",
+      "stock": 18,
+      "sizes": ["XS", "S", "M", "L"],
+      "discount": 0,
+      "featured": false
+    },
+    {
+      "id": "8",
+      "name": "Vestido Elegante Rojo",
+      "price": 84.99,
+      "image": "/products/dress-elegant-2.jpg",
+      "description": "Vestido elegante rojo con aplicaciones brillantes",
+      "category": "elegante",
+      "stock": 5,
+      "sizes": ["S", "M", "L", "XL"],
+      "discount": 12,
+      "featured": false
+    },
+    {
+      "id": "9",
+      "name": "Vestido Vintage Púrpura",
+      "price": 56.99,
+      "image": "/products/dress-vintage-2.jpg",
+      "description": "Vestido vintage púrpura con estilo retro auténtico",
+      "category": "vintage",
+      "stock": 14,
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "discount": 8,
+      "featured": false
+    },
+    {
+      "id": "10",
+      "name": "Mini Vestido Rosa",
+      "price": 41.99,
+      "image": "/products/dress-mini-2.jpg",
+      "description": "Mini vestido rosa con detalles coreanos únicos",
+      "category": "mini",
+      "stock": 22,
+      "sizes": ["XS", "S", "M"],
+      "discount": 15,
+      "featured": false
+    },
+    {
+      "id": "11",
+      "name": "Vestido Midi Azul Marino",
+      "price": 71.99,
+      "image": "/products/dress-midi-2.jpg",
+      "description": "Vestido midi azul marino con botones dorados",
+      "category": "midi",
+      "stock": 9,
+      "sizes": ["S", "M", "L", "XL"],
+      "discount": 0,
+      "featured": false
+    },
+    {
+      "id": "12",
+      "name": "Vestido Maxi Beige",
+      "price": 76.99,
+      "image": "/products/dress-maxi-2.jpg",
+      "description": "Vestido maxi beige con estilo minimalista coreano",
+      "category": "maxi",
+      "stock": 7,
+      "sizes": ["M", "L", "XL", "XXL"],
+      "discount": 18,
+      "featured": false
+    },
+    {
+      "id": "13",
+      "name": "Vestido Casual Estampado",
+      "price": 48.99,
+      "image": "/products/dress-casual-3.jpg",
+      "description": "Vestido casual con estampado geométrico coreano",
+      "category": "casual",
+      "stock": 16,
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "discount": 0,
+      "featured": false
+    },
+    {
+      "id": "14",
+      "name": "Vestido Elegante Dorado",
+      "price": 92.99,
+      "image": "/products/dress-elegant-3.jpg",
+      "description": "Vestido elegante dorado con lentejuelas para ocasiones especiales",
+      "category": "elegante",
+      "stock": 4,
+      "sizes": ["S", "M", "L"],
+      "discount": 0,
+      "featured": false
+    },
+    {
+      "id": "15",
+      "name": "Vestido Vintage Verde",
+      "price": 54.99,
+      "image": "/products/dress-vintage-3.jpg",
+      "description": "Vestido vintage verde con cuello peter pan",
+      "category": "vintage",
+      "stock": 11,
+      "sizes": ["XS", "S", "M", "L"],
+      "discount": 7,
+      "featured": false
+    },
+    {
+      "id": "16",
+      "name": "Mini Vestido Negro",
+      "price": 37.99,
+      "image": "/products/dress-mini-3.jpg",
+      "description": "Mini vestido negro con detalles en encaje",
+      "category": "mini",
+      "stock": 25,
+      "sizes": ["XS", "S", "M", "L"],
+      "discount": 25,
+      "featured": false
+    },
+    {
+      "id": "17",
+      "name": "Vestido Midi Coral",
+      "price": 63.99,
+      "image": "/products/dress-midi-3.jpg",
+      "description": "Vestido midi coral con mangas abombadas",
+      "category": "midi",
+      "stock": 13,
+      "sizes": ["S", "M", "L", "XL"],
+      "discount": 0,
+      "featured": false
+    },
+    {
+      "id": "18",
+      "name": "Vestido Maxi Lavanda",
+      "price": 81.99,
+      "image": "/products/dress-maxi-3.jpg",
+      "description": "Vestido maxi lavanda con falda plisada",
+      "category": "maxi",
+      "stock": 8,
+      "sizes": ["M", "L", "XL"],
+      "discount": 10,
+      "featured": false
+    },
+    {
+      "id": "19",
+      "name": "Vestido Casual Rayas",
+      "price": 46.99,
+      "image": "/products/dress-casual-4.jpg",
+      "description": "Vestido casual con rayas horizontales y mangas cortas",
+      "category": "casual",
+      "stock": 19,
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "discount": 0,
+      "featured": false
+    },
+    {
+      "id": "20",
+      "name": "Vestido Elegante Plata",
+      "price": 88.99,
+      "image": "/products/dress-elegant-4.jpg",
+      "description": "Vestido elegante plata con brillo sutil para fiestas",
+      "category": "elegante",
+      "stock": 6,
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "discount": 0,
+      "featured": false
+    }
+  ]
+} 

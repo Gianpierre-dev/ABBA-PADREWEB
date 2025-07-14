@@ -1,0 +1,97 @@
+---
+export interface Props {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  description?: string;
+  category?: string;
+  discount?: number;
+}
+
+const { id, name, price, image, description, category, discount } = Astro.props;
+
+const discountedPrice = discount ? price * (1 - discount / 100) : price;
+const whatsappMessage = `Hola! Me interesa el producto: ${name} - $${discountedPrice.toFixed(2)}`;
+const whatsappUrl = `https://wa.me/970554050?text=${encodeURIComponent(whatsappMessage)}`;
+---
+
+<div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+  <!-- Product Image -->
+  <div class="relative">
+    <img 
+      src={image} 
+      alt={name} 
+      class="w-full h-64 object-contain bg-gray-50"
+    />
+    {discount && (
+      <span class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
+        -{discount}%
+      </span>
+    )}
+    {category && (
+      <span class="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs">
+        {category}
+      </span>
+    )}
+  </div>
+  
+  <!-- Product Info -->
+  <div class="p-4">
+    <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
+      {name}
+    </h3>
+    
+    {description && (
+      <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+        {description}
+      </p>
+    )}
+    
+    <!-- Price -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-2">
+        <span class="text-2xl font-bold text-green-600">
+          ${discountedPrice.toFixed(2)}
+        </span>
+        {discount && (
+          <span class="text-sm text-gray-500 line-through">
+            ${price.toFixed(2)}
+          </span>
+        )}
+      </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="flex space-x-2">
+              <button 
+          class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 add-to-cart-btn"
+          data-product-id={id}
+          data-product-name={name}
+          data-product-price={discountedPrice}
+        >
+          🛒 Agregar
+        </button>
+      
+      <a 
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 text-center"
+      >
+        💬 WhatsApp
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Script global del carrito manejado en Layout.astro -->
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style> 
